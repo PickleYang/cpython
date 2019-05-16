@@ -9,6 +9,10 @@ extern "C" {
  *** Its definition may be changed or removed at any moment.
  ***/
 
+#ifndef Py_BUILD_CORE
+#  error "this header requires Py_BUILD_CORE define"
+#endif
+
 /*
  * A two-level accumulator of unicode objects that avoids both the overhead
  * of keeping a huge number of small separate objects, and the quadratic

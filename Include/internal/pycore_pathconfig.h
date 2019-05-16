@@ -4,28 +4,17 @@
 extern "C" {
 #endif
 
-PyAPI_FUNC(void) _Py_wstrlist_clear(
-    int len,
-    wchar_t **list);
-PyAPI_FUNC(wchar_t**) _Py_wstrlist_copy(
-    int len,
-    wchar_t **list);
-PyAPI_FUNC(_PyInitError) _Py_wstrlist_append(
-    int *len,
-    wchar_t ***list,
-    const wchar_t *str);
-PyAPI_FUNC(PyObject*) _Py_wstrlist_as_pylist(
-    int len,
-    wchar_t **list);
+#ifndef Py_BUILD_CORE
+#  error "this header requires Py_BUILD_CORE define"
+#endif
 
 typedef struct _PyPathConfig {
     /* Full path to the Python program */
     wchar_t *program_full_path;
     wchar_t *prefix;
+    wchar_t *exec_prefix;
 #ifdef MS_WINDOWS
     wchar_t *dll_path;
-#else
-    wchar_t *exec_prefix;
 #endif
     /* Set by Py_SetPath(), or computed by _PyPathConfig_Init() */
     wchar_t *module_search_path;
@@ -55,7 +44,9 @@ PyAPI_FUNC(_PyInitError) _PyPathConfig_SetGlobal(
 PyAPI_FUNC(_PyInitError) _PyPathConfig_Calculate_impl(
     _PyPathConfig *config,
     const _PyCoreConfig *core_config);
-PyAPI_FUNC(PyObject*) _PyPathConfig_ComputeArgv0(int argc, wchar_t **argv);
+PyAPI_FUNC(int) _PyPathConfig_ComputeSysPath0(
+    const _PyWstrList *argv,
+    PyObject **path0);
 PyAPI_FUNC(int) _Py_FindEnvConfigValue(
     FILE *env_file,
     const wchar_t *key,
