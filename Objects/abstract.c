@@ -1,12 +1,12 @@
 /* Abstract Object Interface (many thanks to Jim Fulton) */
 
 #include "Python.h"
-#include "pycore_abstract.h"   // _PyIndex_Check()
-#include "pycore_ceval.h"      // _Py_EnterRecursiveCall()
+#include "pycore_abstract.h"      // _PyIndex_Check()
+#include "pycore_ceval.h"         // _Py_EnterRecursiveCall()
 #include "pycore_pyerrors.h"
-#include "pycore_pystate.h"
+#include "pycore_pystate.h"       // _PyThreadState_GET()
 #include <ctype.h>
-#include "structmember.h" /* we need the offsetof() macro from there */
+#include <stddef.h>               // offsetof()
 #include "longintrepr.h"
 
 
@@ -900,7 +900,7 @@ binary_op(PyObject *v, PyObject *w, const int op_slot, const char *op_name)
         Py_DECREF(result);
 
         if (op_slot == NB_SLOT(nb_rshift) &&
-            PyCFunction_Check(v) &&
+            PyCFunction_CheckExact(v) &&
             strcmp(((PyCFunctionObject *)v)->m_ml->ml_name, "print") == 0)
         {
             PyErr_Format(PyExc_TypeError,
@@ -2287,7 +2287,7 @@ method_output_as_list(PyObject *o, _Py_Identifier *meth_id)
             PyErr_Format(PyExc_TypeError,
                          "%.200s.%U() returned a non-iterable (type %.200s)",
                          Py_TYPE(o)->tp_name,
-                         meth_id->object,
+                         _PyUnicode_FromId(meth_id),
                          Py_TYPE(meth_output)->tp_name);
         }
         Py_DECREF(meth_output);
